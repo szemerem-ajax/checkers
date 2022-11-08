@@ -1,7 +1,5 @@
-<script>
-	import Counter from './Counter.svelte';
-	import welcome from '$lib/images/svelte-welcome.webp';
-	import welcome_fallback from '$lib/images/svelte-welcome.png';
+<script lang="ts">
+	import { enhance } from "$app/forms";
 </script>
 
 <svelte:head>
@@ -9,51 +7,21 @@
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
 
-<section>
-	<h1>
-		<span class="welcome">
-			<picture>
-				<source srcset={welcome} type="image/webp" />
-				<img src={welcome_fallback} alt="Welcome" />
-			</picture>
-		</span>
-
-		to your new<br />SvelteKit app
-	</h1>
-
-	<h2>
-		try editing <strong>src/routes/+page.svelte</strong>
-	</h2>
-
-	<Counter />
+<section class="grid place-items-center">
+	<div class="w-4/5 sm:w-3/5 grid place-items-center">
+		<h1 class="text-5xl font-bold bg-gradient-to-r from-orange-300 to-sky-400 bg-clip-text text-transparent">Welcome</h1>
+		<p>to the best online free to play 1v1 checkers website!</p>
+		<div class="flex gap-4 mt-6">
+			<a href="/" class="p-2 bg-sky-500 text-white rounded-md transition-colors hover:bg-sky-400">Create game</a>
+			<form action="" use:enhance>
+				<input class="focus:outline placeholder:italic placeholder:text-slate-400" type="text" name="gameId" id="inputGameId" placeholder="or join an existing game">
+			</form>
+		</div>
+	</div>
 </section>
 
-<style>
-	section {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		flex: 0.6;
-	}
-
-	h1 {
-		width: 100%;
-	}
-
-	.welcome {
-		display: block;
-		position: relative;
-		width: 100%;
-		height: 0;
-		padding: 0 0 calc(100% * 495 / 2048) 0;
-	}
-
-	.welcome img {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		display: block;
+<style lang="postcss">
+	#inputGameId {
+		@apply bg-slate-900 rounded-md p-2 caret-sky-400 outline-sky-400 outline-1;
 	}
 </style>
