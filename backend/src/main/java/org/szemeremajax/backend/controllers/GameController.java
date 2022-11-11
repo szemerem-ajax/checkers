@@ -9,6 +9,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/game")
+@CrossOrigin(originPatterns = "*")
 public class GameController {
     @Autowired
     BoardService boardService;
