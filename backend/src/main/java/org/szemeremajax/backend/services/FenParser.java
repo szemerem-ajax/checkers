@@ -17,6 +17,7 @@ public class FenParser {
     public Board parseFen() {
         var sideToMove = getAlliance();
         var pieces = new Piece[50];
+        expectChar(':');
 
         return new Board(pieces, sideToMove);
     }
