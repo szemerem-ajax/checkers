@@ -1,5 +1,5 @@
-type Alliance = 'WHITE' | 'BLACK';
-type PieceType = 'MAN' | 'KING';
+export type Alliance = 'WHITE' | 'BLACK';
+export type PieceType = 'MAN' | 'KING';
 
 export default class Piece {
     private readonly _type: PieceType;

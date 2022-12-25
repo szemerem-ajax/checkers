@@ -17,6 +17,7 @@
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "next",
 		"@types/cookie": "^0.5.1",
+		"@types/stompjs": "^2.3.5",
 		"@typescript-eslint/eslint-plugin": "^5.27.0",
 		"@typescript-eslint/parser": "^5.27.0",
 		"autoprefixer": "^10.4.7",
@@ -41,6 +42,7 @@
 	"type": "module",
 	"dependencies": {
 		"@sveltejs/adapter-node": "^1.0.0-next.100",
-		"sockjs-client": "^1.6.1"
+		"sockjs-client": "^1.6.1",
+		"stompjs": "^2.3.3"
 	}
 }
