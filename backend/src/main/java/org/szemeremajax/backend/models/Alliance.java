@@ -18,4 +18,11 @@ public enum Alliance {
             case BLACK -> WHITE;
         };
     }
+
+    public int index() {
+        return switch (this) {
+            case WHITE -> 0;
+            case BLACK -> 1;
+        };
+    }
 }

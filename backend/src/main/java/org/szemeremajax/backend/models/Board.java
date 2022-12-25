@@ -1,6 +1,6 @@
 package org.szemeremajax.backend.models;
 
-public class Board {
+public class Board implements Cloneable {
     private final Piece[] board;
     private Alliance sideToMove;
 
@@ -45,5 +45,12 @@ public class Board {
 
     public void setOppositeSideToMove() {
         setSideToMove(getSideToMove().opposite());
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    @Override
+    public Board clone() {
+        var cloned = board.clone();
+        return new Board(cloned, sideToMove);
     }
 }
