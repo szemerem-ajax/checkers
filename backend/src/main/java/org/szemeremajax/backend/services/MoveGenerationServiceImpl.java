@@ -55,6 +55,18 @@ public class MoveGenerationServiceImpl implements MoveGenerationService {
         // Combine attack maps into one for easier use
         manAttackMap[0] = whiteManAttackMap;
         manAttackMap[1] = blackManAttackMap;
+
+        // Remove invalid moves (< 1 || > 50)
+        for (int i = 1; i <= 50; i++) {
+            if (whiteManAttackMap[i][0] < 1 || whiteManAttackMap[i][0] > 50)
+                whiteManAttackMap[i][0] = -1;
+            if (whiteManAttackMap[i][1] < 1 || whiteManAttackMap[i][1] > 50)
+                whiteManAttackMap[i][1] = -1;
+            if (blackManAttackMap[i][0] < 1 || blackManAttackMap[i][0] > 50)
+                blackManAttackMap[i][0] = -1;
+            if (blackManAttackMap[i][1] < 1 || blackManAttackMap[i][1] > 50)
+                blackManAttackMap[i][1] = -1;
+        }
     }
 
     @Override
@@ -86,9 +98,44 @@ public class MoveGenerationServiceImpl implements MoveGenerationService {
             if (piece.kind() == PieceKind.MAN) {
                 visitMan(board, i, piece.alliance(), moves);
             } else {
-                // TODO: visitKing (these will need sliding moves)
+                visitKing(board, i, piece.alliance(), moves);
             }
         }
+    }
+
+    private static void visitKing(Board board, int position, Alliance us, List<BoardTransition> moves) {
+        visitSliding(board, us, position, 0, 0, moves);
+        visitSliding(board, us, position, 0, 1, moves);
+        visitSliding(board, us, position, 1, 0, moves);
+        visitSliding(board, us, position, 1, 1, moves);
+    }
+
+    private static void visitSliding(Board board, Alliance us, int pos, int dirY, int dirX, List<BoardTransition> moves) {
+        int next = manAttackMap[dirY][pos][dirX];
+        while (next != -1 && board.isSquareEmpty(next)) {
+            var move = Move.createNormal(pos, next);
+            var newBoard = board.clone();
+            newBoard.setOppositeSideToMove();
+            newBoard.setPiece(next, newBoard.setPiece(pos, null));
+            moves.add(new BoardTransition(move, board, newBoard));
+
+            next = manAttackMap[dirY][next][dirX];
+        }
+
+        if (next == -1)
+            return;
+        if (board.getPiece(next).alliance() == us)
+            return;
+
+        int landing = manAttackMap[dirY][next][dirX];
+        if (landing == -1 || board.isSquareOccupied(landing))
+            return;
+
+        var move = Move.createCapture(pos, landing);
+        var newBoard = board.clone();
+        newBoard.setPiece(next, null);
+        newBoard.setPiece(landing, newBoard.setPiece(pos, null));
+        moves.add(new BoardTransition(move, board, newBoard));
     }
 
     private static void visitMan(Board board, int position, Alliance alliance, List<BoardTransition> moves) {

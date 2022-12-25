@@ -283,4 +283,99 @@ public class MoveGenerationTests {
         Assertions.assertEquals(Alliance.BLACK, piece.alliance());
         Assertions.assertEquals(PieceKind.KING, piece.kind());
     }
+
+    @Test
+    public void whiteKing() {
+        var board = new Board();
+        board.setPiece(34, new Piece(Alliance.WHITE, PieceKind.KING));
+        var moves = generator.generateMoves(board);
+
+        Assertions.assertEquals(13, moves.size());
+        var to = moves.stream().map(m -> m.move().to()).sorted().toList();
+        var buf = new Integer[13];
+        to.toArray(buf);
+
+        Assertions.assertArrayEquals(new Integer[] { 1, 7, 12, 18, 23, 25, 29, 30, 39, 40, 43, 45, 48 }, buf);
+    }
+
+    @Test
+    public void whiteKingBlocked() {
+        var board = new Board();
+        board.setPiece(34, new Piece(Alliance.WHITE, PieceKind.KING));
+        board.setPiece(12, new Piece(Alliance.WHITE, PieceKind.MAN));
+        var moves = generator.generateMoves(board);
+
+        var to = moves.stream().filter(m -> m.move().from() == 34).map(m -> m.move().to()).sorted().toList();
+        Assertions.assertEquals(10, to.size());
+        var buf = new Integer[10];
+        to.toArray(buf);
+
+        Assertions.assertArrayEquals(new Integer[] { 18, 23, 25, 29, 30, 39, 40, 43, 45, 48 }, buf);
+    }
+
+    @Test
+    public void whiteKingCapture() {
+        var board = new Board();
+        board.setPiece(29, new Piece(Alliance.WHITE, PieceKind.KING));
+        board.setPiece(12, new Piece(Alliance.BLACK, PieceKind.MAN));
+        var moves = generator.generateMoves(board);
+
+        Assertions.assertEquals(1, moves.size());
+        var move = moves.get(0);
+        Assertions.assertEquals(MoveKind.CAPTURE, move.move().kind());
+        Assertions.assertEquals(29, move.move().from());
+        Assertions.assertEquals(7, move.move().to());
+        Assertions.assertNull(move.to().getPiece(12));
+        Assertions.assertNull(move.to().getPiece(29));
+        Assertions.assertNotNull(move.to().getPiece(7));
+    }
+
+    @Test
+    public void blackKing() {
+        var board = new Board();
+        board.setOppositeSideToMove();
+        board.setPiece(34, new Piece(Alliance.BLACK, PieceKind.KING));
+        var moves = generator.generateMoves(board);
+
+        Assertions.assertEquals(13, moves.size());
+        var to = moves.stream().map(m -> m.move().to()).sorted().toList();
+        var buf = new Integer[13];
+        to.toArray(buf);
+
+        Assertions.assertArrayEquals(new Integer[] { 1, 7, 12, 18, 23, 25, 29, 30, 39, 40, 43, 45, 48 }, buf);
+    }
+
+    @Test
+    public void blackKingBlocked() {
+        var board = new Board();
+        board.setOppositeSideToMove();
+        board.setPiece(34, new Piece(Alliance.BLACK, PieceKind.KING));
+        board.setPiece(12, new Piece(Alliance.BLACK, PieceKind.MAN));
+        var moves = generator.generateMoves(board);
+
+        var to = moves.stream().filter(m -> m.move().from() == 34).map(m -> m.move().to()).sorted().toList();
+        Assertions.assertEquals(10, to.size());
+        var buf = new Integer[10];
+        to.toArray(buf);
+
+        Assertions.assertArrayEquals(new Integer[] { 18, 23, 25, 29, 30, 39, 40, 43, 45, 48 }, buf);
+    }
+
+    @Test
+    public void blackKingCapture() {
+        var board = new Board();
+        board.setOppositeSideToMove();
+        board.setPiece(29, new Piece(Alliance.BLACK, PieceKind.KING));
+        board.setPiece(12, new Piece(Alliance.WHITE, PieceKind.MAN));
+        var moves = generator.generateMoves(board);
+
+        Assertions.assertEquals(1, moves.size());
+        var move = moves.get(0);
+        Assertions.assertEquals(MoveKind.CAPTURE, move.move().kind());
+        Assertions.assertEquals(29, move.move().from());
+        Assertions.assertEquals(7, move.move().to());
+        Assertions.assertNull(move.to().getPiece(12));
+        Assertions.assertNull(move.to().getPiece(29));
+        Assertions.assertNotNull(move.to().getPiece(7));
+    }
 }
