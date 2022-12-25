@@ -4,7 +4,6 @@ import org.szemeremajax.backend.models.Alliance;
 import org.szemeremajax.backend.models.Board;
 import org.szemeremajax.backend.models.Piece;
 import org.szemeremajax.backend.models.PieceKind;
-import org.szemeremajax.backend.services.FenParser;
 
 public class BoardFactory {
     public static Board defaultPosition() {
@@ -18,15 +17,5 @@ public class BoardFactory {
         }
 
         return new Board(pieces, Alliance.WHITE);
-    }
-
-    public static Board fromPdn(String pdn) {
-        return null;
-    }
-
-    public static Board fromFen(String fen) {
-        var parser = new FenParser(fen);
-
-        return parser.parseFen();
     }
 }
