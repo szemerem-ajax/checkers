@@ -39,6 +39,10 @@ public class Board implements Cloneable {
         return sideToMove;
     }
 
+    public Piece[] getPiecesRaw() {
+        return board;
+    }
+
     public void setSideToMove(Alliance sideToMove) {
         this.sideToMove = sideToMove;
     }
