@@ -59,6 +59,10 @@
 
         return moves.filter(m => m.from == tile).map(m => m.to);
     }
+
+    function move(from: number, to: number) {
+        socket.send('/app/move', undefined, JSON.stringify({uuid: data.id, from: from, to: to}));
+    }
 </script>
 
 <div class="grid place-items-center">
@@ -66,6 +70,6 @@
     {#if board === null}
         <h1>Connecting to server...</h1>
     {:else}
-        <Board board={board} isValidMove={validateMove} movesFrom={getMovesFrom}/>
+        <Board board={board} isValidMove={validateMove} movesFrom={getMovesFrom} move={move} />
     {/if}
 </div>

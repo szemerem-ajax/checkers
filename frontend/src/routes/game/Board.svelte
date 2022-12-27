@@ -5,41 +5,43 @@
     export let board: Array<Piece | null>;
     export let isValidMove: (from: number, to: number) => boolean;
     export let movesFrom: (tile: number) => number[];
+    export let move: (from: number, to: number) => void;
 
     let selected: number | null = null;
     $: valid = selected === null ? [] : movesFrom(selected);
 
     function getImage(piece: Piece) {
-        console.log(piece)
         const prefix = piece.alliance.toLowerCase();
         const suffix = piece.kind.toLowerCase();
         return `/${prefix}_${suffix}.png`;
     }
 
     function dragstart(ev: any) {
-        const id = ev.target.id;
+        const id = ev.target.closest('.tile').id;
+        console.log('drag start', id)
         selected = parseInt(id.substring(1));
-    }
-
-    function dragend(ev: any) {
-        selected = null;
     }
     
     function dragover(ev: any) {
         if (selected === null)
             return;
 
-        const id = ev.target.id;
+        const id = ev.target.closest('.tile').id;
+        console.log('drag over', id)
         const from = selected;
         const to = parseInt(id.substring(4));
-        console.log(from, to);
         if (isValidMove(from, to))
             ev.preventDefault();
     }
 
     function drop(ev: any) {
+        console.log('drop!!!')
         ev.preventDefault();
-        console.log('drop')
+        const from = selected;
+        const to = parseInt(ev.target.closest(".tile").id.substring(4));
+        console.log('drop', from, to)
+        if (valid.includes(to))
+            triggerMove(from!, to);
     }
 
     function resetSelected() {
@@ -47,16 +49,23 @@
     }
 
     function tileClick(num: number) {
+        console.log('click')
         if (isNaN(num)) {
             resetSelected();
             return;
         }
 
-        console.log(`click ${num}`)
-        if (selected !== num)
+        if (selected !== null && valid.includes(num))
+            triggerMove(selected, num);
+        else if (selected !== num)
             selected = num;
         else
             resetSelected();
+    }
+
+    function triggerMove(from: number, to: number) {
+        move(from, to);
+        resetSelected();
     }
 </script>
 
@@ -64,7 +73,7 @@
     {#each board as piece, i}
         <Tile index={i} dragover={dragover} drop={drop} click={tileClick}>
             {#if piece !== null}
-                <img id="${i+1}" class="piece" src={getImage(piece)} alt="A piece" draggable="true" on:dragstart={dragstart} on:dragend={dragend}>
+                <img id="${i+1}" class="piece" src={getImage(piece)} alt="A piece" draggable="true" on:dragstart={dragstart}>
             {:else if selected !== null && valid.includes(i + 1)}
                 <div class="point"></div>
             {/if}
