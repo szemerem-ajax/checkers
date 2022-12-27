@@ -194,7 +194,7 @@ public class MoveGenerationServiceImpl implements MoveGenerationService {
         var moveMap = manAttackMap[alliance.index()][from];
         int dir = moveMap[0] == to ? 0 : 1;
         var landing = manAttackMap[alliance.index()][to][dir];
-        if (landing != -1 && board.isSquareOccupied(landing))
+        if (landing == -1 || board.isSquareOccupied(landing))
             return;
 
         Move move;
