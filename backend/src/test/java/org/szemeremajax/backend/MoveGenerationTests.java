@@ -183,8 +183,8 @@ public class MoveGenerationTests {
     public void blackCaptureLeft() {
         var board = new Board();
         board.setOppositeSideToMove();
-        board.setPiece(25, new Piece(Alliance.WHITE, PieceKind.MAN));
-        board.setPiece(20, new Piece(Alliance.BLACK, PieceKind.MAN));
+        board.setPiece(24, new Piece(Alliance.WHITE, PieceKind.MAN));
+        board.setPiece(19, new Piece(Alliance.BLACK, PieceKind.MAN));
         var moves = generator.generateMoves(board);
 
         Assertions.assertEquals(1, moves.size());
@@ -386,5 +386,17 @@ public class MoveGenerationTests {
         var moves = generator.generateMoves(board);
 
         Assertions.assertEquals(9, moves.size());
+    }
+
+    @Test
+    public void blackEdgeBug() {
+        var board = new Board();
+        board.setOppositeSideToMove();
+        board.setPiece(16, new Piece(Alliance.BLACK, PieceKind.MAN));
+        var moves = generator.generateMoves(board);
+
+        Assertions.assertEquals(1, moves.size());
+        var move = moves.get(0);
+        Assertions.assertEquals(21, move.move().to());
     }
 }
