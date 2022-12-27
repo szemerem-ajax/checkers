@@ -23,22 +23,27 @@ public class MoveGenerationServiceImpl implements MoveGenerationService {
 
         // Generate normal moves, disregarding finishing ranks
         for (int i = 1; i <= 50; i++) {
-            if (i % 10 < 6 && i % 10 > 0) {
+            int remainder = i % 10;
+            if (remainder >= 1 && remainder <= 5) {
                 whiteManAttackMap[i][0] = i - 5;
+                whiteManAttackMap[i][1] = i - 4;
+                blackManAttackMap[i][0] = i + 5;
                 blackManAttackMap[i][1] = i + 6;
 
-                if (i % 10 != 5) {
-                    whiteManAttackMap[i][1] = i - 4;
-                    blackManAttackMap[i][0] = i + 5;
+                if (remainder == 5) {
+                    whiteManAttackMap[i][1] = -1;
+                    blackManAttackMap[i][1] = -1;
                 }
             } else {
-                if (i % 10 != 6) {
-                    whiteManAttackMap[i][0] = i - 6;
-                    blackManAttackMap[i][1] = i + 5;
-                }
-
+                whiteManAttackMap[i][0] = i - 6;
                 whiteManAttackMap[i][1] = i - 5;
                 blackManAttackMap[i][0] = i + 4;
+                blackManAttackMap[i][1] = i + 5;
+
+                if (remainder == 6) {
+                    whiteManAttackMap[i][0] = -1;
+                    blackManAttackMap[i][0] = -1;
+                }
             }
         }
 
