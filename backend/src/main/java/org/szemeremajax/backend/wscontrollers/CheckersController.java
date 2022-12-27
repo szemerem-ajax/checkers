@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.szemeremajax.backend.messages.BoardMovesMessage;
 import org.szemeremajax.backend.messages.BoardUpdateMessage;
 import org.szemeremajax.backend.messages.MoveMessage;
-import org.szemeremajax.backend.messages.RequestMovesMessage;
+import org.szemeremajax.backend.messages.BoardMessage;
 import org.szemeremajax.backend.services.BoardService;
 import org.szemeremajax.backend.services.MoveGenerationService;
 
@@ -26,34 +26,36 @@ public class CheckersController {
     private MoveGenerationService moveGenerationService;
 
     @MessageMapping("/getboard")
-    public void getBoard(@Payload GetBoardMessage message) {
-        var board = boardService.lookupBoard(message.getUuid()).orElseThrow();
-        template.convertAndSend("/game/" + message.getUuid() + "/board", new BoardUpdateMessage(board));
+    public void getBoard(@Payload BoardMessage message) {
+        sendBoardUpdate(message.getUuid());
     }
 
     @MessageMapping("/getmoves")
-    public void getMoves(@Payload RequestMovesMessage message) {
-        var board = boardService.lookupBoard(message.getUuid()).orElseThrow();
-        var moves = moveGenerationService.generateMoves(board);
-        template.convertAndSend("/game/" + message.getUuid() + "/moves", new BoardMovesMessage(moves));
+    public void getMoves(@Payload BoardMessage message) {
+        sendMovesUpdate(message.getUuid());
     }
 
     @MessageMapping("/move")
     public void move(@Payload MoveMessage message) {
         var board = boardService.lookupBoard(message.getUuid()).orElseThrow();
         var moves = moveGenerationService.generateMoves(board);
-        var choice = moves.stream().filter(m -> m.move().from() == message.getFrom() && m.move().to() == message.getTo()).findFirst().orElseThrow();
+        var choice = moves.stream().filter(message::matches).findFirst().orElseThrow();
         var newBoard = choice.to();
         boardService.setBoard(message.getUuid(), newBoard);
-        template.convertAndSend("/game/" + message.getUuid() + "/board", new BoardUpdateMessage(newBoard));
-        template.convertAndSend("/game/" + message.getUuid() + "/moves", new BoardMovesMessage(moveGenerationService.generateMoves(newBoard)));
+        sendBoardUpdate(message.getUuid());
+        sendMovesUpdate(message.getUuid());
     }
 
-    public static class GetBoardMessage {
-        private String uuid;
+    private void sendBoardUpdate(String uuid) {
+        var board = boardService.lookupBoard(uuid).orElseThrow();
+        var url = "/game/" + uuid + "/board";
+        template.convertAndSend(url, new BoardUpdateMessage(board));
+    }
 
-        public String getUuid() {
-            return uuid;
-        }
+    private void sendMovesUpdate(String uuid) {
+        var board = boardService.lookupBoard(uuid).orElseThrow();
+        var moves = moveGenerationService.generateMoves(board);
+        var url = "/game/" + uuid + "/moves";
+        template.convertAndSend(url, new BoardMovesMessage(moves));
     }
 }

@@ -1,6 +1,6 @@
 package org.szemeremajax.backend.messages;
 
-public class RequestMovesMessage {
+public class BoardMessage {
     private String uuid;
 
     public String getUuid() {
