@@ -7,6 +7,7 @@ import org.szemeremajax.backend.services.AuthService;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(originPatterns = "*")
 public class AuthController {
     @Autowired
     AuthService authService;
