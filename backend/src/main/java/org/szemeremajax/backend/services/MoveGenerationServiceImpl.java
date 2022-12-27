@@ -82,135 +82,131 @@ public class MoveGenerationServiceImpl implements MoveGenerationService {
         List<BoardTransition> moves = new ArrayList<>();
         iterateBoard(board, moves);
 
-        // Check if we have any captures and if so, only keep those
-        if (moves.stream().anyMatch(t -> t.move().kind().isCapture())) {
-            moves.removeIf(t -> !t.move().kind().isCapture());
-        }
-
         return moves;
     }
 
-    private static void iterateBoard(Board board, List<BoardTransition> moves) {
-        for (int i = 1; i <= 50; i++) {
-            if (board.isSquareEmpty(i))
-                continue;
+    private void iterateBoard(Board board, List<BoardTransition> moves) {
+        if (board.getLastJump() != -1) {
+            visitTile(board, board.getLastJump(), moves);
+            removeNonCaptures(moves);
+        } else {
+            for (int i = 1; i <= 50; i++)
+                visitTile(board, i, moves);
 
-            var piece = board.getPiece(i);
-            var toMove = board.getSideToMove();
-            if (piece.alliance() != toMove)
-                continue;
-
-            if (piece.kind() == PieceKind.MAN) {
-                visitMan(board, i, piece.alliance(), moves);
-            } else {
-                visitKing(board, i, piece.alliance(), moves);
-            }
+            if (moves.stream().anyMatch(t -> t.move().kind().isCapture()))
+                removeNonCaptures(moves);
         }
     }
 
-    private static void visitKing(Board board, int position, Alliance us, List<BoardTransition> moves) {
-        visitSliding(board, us, position, 0, 0, moves);
-        visitSliding(board, us, position, 0, 1, moves);
-        visitSliding(board, us, position, 1, 0, moves);
-        visitSliding(board, us, position, 1, 1, moves);
+    private void visitTile(Board board, int tile, List<BoardTransition> moves) {
+        if (board.isSquareEmpty(tile))
+            return;
+
+        var piece = board.getPiece(tile);
+        var alliance = piece.alliance();
+        if (board.getSideToMove() != alliance)
+            return;
+
+        var kind = piece.kind();
+        if (kind == PieceKind.MAN) {
+            visitMan(board, tile, alliance, moves);
+        } else {
+            visitKing(board, tile, alliance, moves);
+        }
     }
 
-    private static void visitSliding(Board board, Alliance us, int pos, int dirY, int dirX, List<BoardTransition> moves) {
-        int next = manAttackMap[dirY][pos][dirX];
-        while (next != -1 && board.isSquareEmpty(next)) {
-            var move = Move.createNormal(pos, next);
-            var newBoard = board.clone();
-            newBoard.setOppositeSideToMove();
-            newBoard.setPiece(next, newBoard.setPiece(pos, null));
-            moves.add(new BoardTransition(move, board, newBoard));
+    private void visitMan(Board board, int tile, Alliance us, List<BoardTransition> moves) {
+        // Normal & promotion
+        var map = manAttackMap[us.index()][tile];
+        int left = map[0];
+        int right = map[1];
 
-            next = manAttackMap[dirY][next][dirX];
+        if (left != -1) {
+            visitManNormal(board, tile, left, moves);
+            visitManCapture(board, tile, left, us, moves);
+        }
+        if (right != -1) {
+            visitManNormal(board, tile, right, moves);
+            visitManCapture(board, tile, right, us, moves);
         }
 
-        if (next == -1)
-            return;
-        if (board.getPiece(next).alliance() == us)
-            return;
-
-        int landing = manAttackMap[dirY][next][dirX];
-        if (landing == -1 || board.isSquareOccupied(landing))
-            return;
-
-        var move = Move.createCapture(pos, landing);
-        var newBoard = board.clone();
-        newBoard.setPiece(next, null);
-        newBoard.setPiece(landing, newBoard.setPiece(pos, null));
-        moves.add(new BoardTransition(move, board, newBoard));
-    }
-
-    private static void visitMan(Board board, int position, Alliance alliance, List<BoardTransition> moves) {
-        var moveMap = manAttackMap[alliance.index()][position];
-        int left = moveMap[0];
-        int right = moveMap[1];
-        if (left == -1 && right == -1)
-            return;
-
+        // Capture in other direction
+        map = manAttackMap[us.opposite().index()][tile];
+        left = map[0];
+        right = map[1];
         if (left != -1)
-            visitMove(board, alliance, position, left, moves);
+            visitManCapture(board, tile, left, us, moves);
         if (right != -1)
-            visitMove(board, alliance, position, right, moves);
+            visitManCapture(board, tile, right, us, moves);
     }
 
-    private static void visitMove(Board board, Alliance alliance, int from, int to, List<BoardTransition> moves) {
-        if (isFinishingRank(to)) {
-            visitPromotion(board, alliance, from, to, moves);
-            return;
-        }
-        if (board.isSquareOccupied(to)) {
-            visitCapture(board, alliance, from, to, moves);
-            return;
-        }
-
-        var move = Move.createNormal(from, to);
-        var newBoard = board.clone();
-        newBoard.setPiece(to, newBoard.setPiece(from, null));
-        newBoard.setSideToMove(alliance.opposite());
-        var transition = new BoardTransition(move, board, newBoard);
-        moves.add(transition);
-    }
-
-    private static void visitPromotion(Board board, Alliance alliance, int from, int to, List<BoardTransition> moves) {
+    private void visitManNormal(Board board, int from, int to, List<BoardTransition> moves) {
         if (board.isSquareOccupied(to))
             return;
 
-        var move = Move.createPromotion(from, to);
-        var newBoard = board.clone();
-        newBoard.setSideToMove(alliance.opposite());
-        newBoard.setPiece(from, null);
-        newBoard.setPiece(to, new Piece(alliance, PieceKind.KING));
-        var transition = new BoardTransition(move, board, newBoard);
+        var transition = isFinishingRank(to)
+                ? board.makePromotionMove(from, to)
+                : board.makeNormalMove(from, to);
         moves.add(transition);
     }
 
-    private static void visitCapture(Board board, Alliance alliance, int from, int to, List<BoardTransition> moves) {
-        if (alliance == board.getPiece(to).alliance())
+    private void visitManCapture(Board board, int from, int to, Alliance us, List<BoardTransition> moves) {
+        if (board.isSquareEmpty(to) || board.getPiece(to).alliance() == us)
             return;
 
-        var moveMap = manAttackMap[alliance.index()][from];
-        int dir = moveMap[0] == to ? 0 : 1;
-        var landing = manAttackMap[alliance.index()][to][dir];
+        var map = manAttackMap[us.index()][from];
+        int dir = to == map[0] ? 0 : 1;
+        int landing = manAttackMap[us.index()][to][dir];
         if (landing == -1 || board.isSquareOccupied(landing))
             return;
 
-        Move move;
-        var newBoard = board.clone();
-        newBoard.setPiece(to, null);
-        if (isFinishingRank(landing)) {
-            move = Move.createPromotionWithCapture(from, landing);
-            newBoard.setSideToMove(alliance.opposite());
-            newBoard.setPiece(from, null);
-            newBoard.setPiece(landing, new Piece(alliance, PieceKind.KING));
-        } else {
-            move = Move.createCapture(from, landing);
-            newBoard.setPiece(landing, newBoard.setPiece(from, null));
+        var transition = board.makeCaptureMove(from, to, landing);
+        var newBoard = transition.to();
+        var newMoves = generateMoves(newBoard);
+        if (newMoves.isEmpty()) {
+            newBoard.setLastJump(-1);
+            newBoard.setOppositeSideToMove();
+
+            if (isFinishingRank(landing)) {
+                newBoard.setPiece(landing, new Piece(us, PieceKind.KING));
+                transition = board.makePromotionMove(from, to, landing);
+            }
         }
 
-        var transition = new BoardTransition(move, board, newBoard);
+        moves.add(transition);
+    }
+
+    private void visitKing(Board board, int tile, Alliance us, List<BoardTransition> moves) {
+        visitKingDirection(board, tile, 0, 0, us, moves);
+        visitKingDirection(board, tile, 0, 1, us, moves);
+        visitKingDirection(board, tile, 1, 0, us, moves);
+        visitKingDirection(board, tile, 1, 1, us, moves);
+    }
+
+    private void visitKingDirection(Board board, int tile, int x, int y, Alliance us, List<BoardTransition> moves) {
+        int pos = manAttackMap[y][tile][x];
+        while (pos != -1 && board.isSquareEmpty(pos)) {
+            var transition = board.makeNormalMove(tile, pos);
+            moves.add(transition);
+            pos = manAttackMap[y][pos][x];
+        }
+
+        if (pos == -1)
+            return;
+        if (board.isSquareEmpty(pos) || board.getPiece(pos).alliance() == us)
+            return;
+
+        int landing = manAttackMap[y][pos][x];
+        if (landing == -1 || board.isSquareOccupied(landing))
+            return;
+
+        var transition = board.makeCaptureMove(tile, pos, landing);
+        var newBoard = transition.to();
+        var newMoves = generateMoves(newBoard);
+        if (newMoves.isEmpty()) {
+            newBoard.setLastJump(-1);
+            newBoard.setOppositeSideToMove();
+        }
         moves.add(transition);
     }
 
@@ -225,5 +221,9 @@ public class MoveGenerationServiceImpl implements MoveGenerationService {
                 .mapToObj(board::getPiece)
                 .filter(p -> p.alliance() == side)
                 .count();
+    }
+
+    private static void removeNonCaptures(List<BoardTransition> moves) {
+        moves.removeIf(t -> !t.move().kind().isCapture());
     }
 }

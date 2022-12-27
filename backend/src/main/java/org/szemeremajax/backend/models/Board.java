@@ -3,6 +3,7 @@ package org.szemeremajax.backend.models;
 public class Board implements Cloneable {
     private final Piece[] board;
     private Alliance sideToMove;
+    private int lastJump = -1;
 
     public Board() {
         this(new Piece[50], Alliance.WHITE);
@@ -49,6 +50,55 @@ public class Board implements Cloneable {
 
     public void setOppositeSideToMove() {
         setSideToMove(getSideToMove().opposite());
+    }
+
+    public int getLastJump() {
+        return lastJump;
+    }
+
+    public void setLastJump(int lastJump) {
+        this.lastJump = lastJump;
+    }
+
+    public BoardTransition makeNormalMove(int from, int to) {
+        var clone = clone();
+        var move = Move.createNormal(from, to);
+
+        clone.setPiece(to, clone.setPiece(from, null));
+        clone.setOppositeSideToMove();
+        return new BoardTransition(move, this, clone);
+    }
+
+    public BoardTransition makeCaptureMove(int from, int via, int to) {
+        var clone = clone();
+        var move = Move.createCapture(from, to);
+
+        clone.setPiece(via, null);
+        clone.setPiece(to, clone.setPiece(from, null));
+        clone.setLastJump(to);
+        // Whether this ends the turn will be decided in the move generator
+        return new BoardTransition(move, this, clone);
+    }
+
+    public BoardTransition makePromotionMove(int from, int to) {
+        var clone = clone();
+        var move = Move.createPromotion(from, to);
+
+        var alliance = clone.setPiece(from, null).alliance();
+        clone.setPiece(to, new Piece(alliance, PieceKind.KING));
+        clone.setOppositeSideToMove();
+        return new BoardTransition(move, this, clone);
+    }
+
+    public BoardTransition makePromotionMove(int from, int via, int to) {
+        var clone = clone();
+        var move = Move.createPromotionWithCapture(from, to);
+
+        var alliance = clone.setPiece(from, null).alliance();
+        clone.setPiece(via, null);
+        clone.setPiece(to, new Piece(alliance, PieceKind.KING));
+        clone.setOppositeSideToMove();
+        return new BoardTransition(move, this, clone);
     }
 
     @SuppressWarnings("MethodDoesntCallSuperMethod")
