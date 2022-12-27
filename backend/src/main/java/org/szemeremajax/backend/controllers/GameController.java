@@ -18,7 +18,7 @@ public class GameController {
     String create() {
         var id = UUID.randomUUID().toString();
         var board = BoardFactory.defaultPosition();
-        boardService.addBoard(id, board);
+        boardService.setBoard(id, board);
 
         return id;
     }

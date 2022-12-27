@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface BoardService {
     Optional<Board> lookupBoard(String id);
-    void addBoard(String id, Board board);
+    void setBoard(String id, Board board);
 }

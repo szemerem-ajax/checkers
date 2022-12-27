@@ -1,6 +1,7 @@
 package org.szemeremajax.backend.services;
 
 import org.springframework.stereotype.Component;
+import org.szemeremajax.backend.factories.BoardFactory;
 import org.szemeremajax.backend.models.Board;
 
 import java.util.HashMap;
@@ -8,6 +9,11 @@ import java.util.Optional;
 
 @Component
 public class BoardServiceImpl extends HashMap<String, Board> implements BoardService {
+    public BoardServiceImpl() {
+        super();
+        put("test", BoardFactory.defaultPosition());
+    }
+
     @Override
     public Optional<Board> lookupBoard(String id) {
         if (containsKey(id))
@@ -17,7 +23,7 @@ public class BoardServiceImpl extends HashMap<String, Board> implements BoardSer
     }
 
     @Override
-    public void addBoard(String id, Board board) {
+    public void setBoard(String id, Board board) {
         put(id, board);
     }
 }
