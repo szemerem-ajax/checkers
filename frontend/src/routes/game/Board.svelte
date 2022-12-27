@@ -18,8 +18,13 @@
 
     function dragstart(ev: any) {
         const id = ev.target.closest('.tile').id;
-        console.log('drag start', id)
-        selected = parseInt(id.substring(1));
+        ev.dataTransfer.effectAllowed = 'move';
+        ev.dataTransfer.dropEffect = 'move';
+        selected = parseInt(id.substring(4));
+    }
+
+    function dragend() {
+        selected = null;
     }
     
     function dragover(ev: any) {
@@ -27,7 +32,6 @@
             return;
 
         const id = ev.target.closest('.tile').id;
-        console.log('drag over', id)
         const from = selected;
         const to = parseInt(id.substring(4));
         if (isValidMove(from, to))
@@ -35,11 +39,9 @@
     }
 
     function drop(ev: any) {
-        console.log('drop!!!')
         ev.preventDefault();
         const from = selected;
         const to = parseInt(ev.target.closest(".tile").id.substring(4));
-        console.log('drop', from, to)
         if (valid.includes(to))
             triggerMove(from!, to);
     }
@@ -73,7 +75,7 @@
     {#each board as piece, i}
         <Tile index={i} dragover={dragover} drop={drop} click={tileClick}>
             {#if piece !== null}
-                <img id="${i+1}" class="piece" src={getImage(piece)} alt="A piece" draggable="true" on:dragstart={dragstart}>
+                <img id="${i+1}" class="piece" src={getImage(piece)} alt="A piece" draggable="true" on:dragstart={dragstart} on:dragend={dragend}>
             {:else if selected !== null && valid.includes(i + 1)}
                 <div class="point"></div>
             {/if}
@@ -89,6 +91,10 @@
         @apply cursor-grab;
         width: 64px;
         height: 64px;
+    }
+
+    .piece:active {
+        @apply cursor-grabbing scale-110 drop-shadow-md;
     }
 
     .point {
