@@ -51,7 +51,6 @@
     }
 
     function tileClick(num: number) {
-        console.log('click')
         if (isNaN(num)) {
             resetSelected();
             return;
@@ -67,7 +66,7 @@
 
     function triggerMove(from: number, to: number) {
         move(from, to);
-        resetSelected();
+        selected = to;
     }
 </script>
 
@@ -94,7 +93,7 @@
     }
 
     .piece:active {
-        @apply cursor-grabbing scale-110 drop-shadow-md;
+        @apply cursor-grabbing scale-105 drop-shadow-md;
     }
 
     .point {

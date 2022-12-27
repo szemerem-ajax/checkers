@@ -123,11 +123,11 @@ public class MoveGenerationServiceImpl implements MoveGenerationService {
 
         if (left != -1) {
             visitManNormal(board, tile, left, moves);
-            visitManCapture(board, tile, left, us, moves);
+            visitManCapture(board, tile, left, us, us.index(), moves);
         }
         if (right != -1) {
             visitManNormal(board, tile, right, moves);
-            visitManCapture(board, tile, right, us, moves);
+            visitManCapture(board, tile, right, us, us.index(), moves);
         }
 
         // Capture in other direction
@@ -135,9 +135,9 @@ public class MoveGenerationServiceImpl implements MoveGenerationService {
         left = map[0];
         right = map[1];
         if (left != -1)
-            visitManCapture(board, tile, left, us, moves);
+            visitManCapture(board, tile, left, us, us.opposite().index(), moves);
         if (right != -1)
-            visitManCapture(board, tile, right, us, moves);
+            visitManCapture(board, tile, right, us, us.opposite().index(), moves);
     }
 
     private void visitManNormal(Board board, int from, int to, List<BoardTransition> moves) {
@@ -150,13 +150,13 @@ public class MoveGenerationServiceImpl implements MoveGenerationService {
         moves.add(transition);
     }
 
-    private void visitManCapture(Board board, int from, int to, Alliance us, List<BoardTransition> moves) {
+    private void visitManCapture(Board board, int from, int to, Alliance us, int y, List<BoardTransition> moves) {
         if (board.isSquareEmpty(to) || board.getPiece(to).alliance() == us)
             return;
 
-        var map = manAttackMap[us.index()][from];
-        int dir = to == map[0] ? 0 : 1;
-        int landing = manAttackMap[us.index()][to][dir];
+        var map = manAttackMap[y][from];
+        int x = to == map[0] ? 0 : 1;
+        int landing = manAttackMap[y][to][x];
         if (landing == -1 || board.isSquareOccupied(landing))
             return;
 
