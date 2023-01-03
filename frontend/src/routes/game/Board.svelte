@@ -22,10 +22,6 @@
         ev.dataTransfer.dropEffect = 'move';
         selected = parseInt(id.substring(4));
     }
-
-    function dragend() {
-        selected = null;
-    }
     
     function dragover(ev: any) {
         if (selected === null)
@@ -74,7 +70,7 @@
     {#each board as piece, i}
         <Tile index={i} dragover={dragover} drop={drop} click={tileClick}>
             {#if piece !== null}
-                <img id="${i+1}" class="piece" src={getImage(piece)} alt="A piece" draggable="true" on:dragstart={dragstart} on:dragend={dragend}>
+                <img id="${i+1}" class="piece" src={getImage(piece)} alt="A piece" draggable="true" on:dragstart={dragstart}>
             {:else if selected !== null && valid.includes(i + 1)}
                 <div class="point"></div>
             {/if}

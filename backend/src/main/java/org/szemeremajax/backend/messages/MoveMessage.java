@@ -4,11 +4,15 @@ import org.szemeremajax.backend.models.BoardTransition;
 import org.szemeremajax.backend.models.Move;
 
 public class MoveMessage {
-    private String uuid;
+    private String boardUuid, authUuid;
     private int from, to;
 
-    public String getUuid() {
-        return uuid;
+    public String getBoardUuid() {
+        return boardUuid;
+    }
+
+    public String getAuthUuid() {
+        return authUuid;
     }
 
     public int getFrom() {

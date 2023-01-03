@@ -5,6 +5,7 @@
 	import type Move from '$lib/Move';
     import Stomp from 'stompjs';
 	import Board from '../Board.svelte';
+	import url from '$lib/Url';
 
     export let data: PageData;
 
@@ -12,7 +13,7 @@
     let board: Array<Piece | null> | null = null;
     let moves: Move[] | null = null;
 
-    const socket = Stomp.client('ws:/localhost:8080/checkers-ws');
+    const socket = Stomp.client(`ws://${url()}:8080/checkers-ws`);
     socket.connect({}, f => {
         socket.subscribe(`/game/${data.id}/board`, msg => {
             const body = JSON.parse(msg.body);
@@ -61,7 +62,7 @@
     }
 
     function move(from: number, to: number) {
-        socket.send('/app/move', undefined, JSON.stringify({uuid: data.id, from: from, to: to}));
+        socket.send('/app/move', undefined, JSON.stringify({boardUuid: data.id, authUuid: window.localStorage.getItem('authId')!, from: from, to: to}));
     }
 </script>
 

@@ -10,6 +10,7 @@ import org.szemeremajax.backend.messages.BoardMovesMessage;
 import org.szemeremajax.backend.messages.BoardUpdateMessage;
 import org.szemeremajax.backend.messages.MoveMessage;
 import org.szemeremajax.backend.messages.BoardMessage;
+import org.szemeremajax.backend.services.AuthService;
 import org.szemeremajax.backend.services.BoardService;
 import org.szemeremajax.backend.services.MoveGenerationService;
 
@@ -25,6 +26,9 @@ public class CheckersController {
     @Autowired
     private MoveGenerationService moveGenerationService;
 
+    @Autowired
+    private AuthService authService;
+
     @MessageMapping("/getboard")
     public void getBoard(@Payload BoardMessage message) {
         sendBoardUpdate(message.getUuid());
@@ -37,13 +41,17 @@ public class CheckersController {
 
     @MessageMapping("/move")
     public void move(@Payload MoveMessage message) {
-        var board = boardService.lookupBoard(message.getUuid()).orElseThrow();
+        var board = boardService.lookupBoard(message.getBoardUuid()).orElseThrow();
+        if (!authService.isAuthorized(message.getBoardUuid(), message.getAuthUuid(), board.getSideToMove())) {
+            throw new IllegalArgumentException();
+        }
+
         var moves = moveGenerationService.generateMoves(board);
         var choice = moves.stream().filter(message::matches).findFirst().orElseThrow();
         var newBoard = choice.to();
-        boardService.setBoard(message.getUuid(), newBoard);
-        sendBoardUpdate(message.getUuid());
-        sendMovesUpdate(message.getUuid());
+        boardService.setBoard(message.getBoardUuid(), newBoard);
+        sendBoardUpdate(message.getBoardUuid());
+        sendMovesUpdate(message.getBoardUuid());
     }
 
     private void sendBoardUpdate(String uuid) {

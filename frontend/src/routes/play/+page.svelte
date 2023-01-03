@@ -1,5 +1,13 @@
 <script lang="ts">
-	import { enhance } from "$app/forms";
+	import { goto } from "$app/navigation";
+	import { redirect } from "@sveltejs/kit";
+
+    let value: string = '';
+
+    function join(ev: any) {
+        ev.preventDefault();
+        goto('/join/' + value);
+    }
 </script>
 
 <svelte:head>
@@ -21,8 +29,8 @@
     <div class="holder">
         <h1 class="header">Join game</h1>
         <p class="max-w-prose">You can enter an ID here and join the game!</p>
-        <form action="/join" method="POST" use:enhance>
-			<input class="focus:outline placeholder:italic placeholder:text-slate-400" type="text" name="gameId" id="inputGameId" placeholder="or join an existing game">
+        <form on:submit={join}>
+			<input class="focus:outline placeholder:italic placeholder:text-slate-400" bind:value={value} type="text" name="gameId" id="inputGameId" placeholder="or join an existing game">
             <button class="btn" type="submit">Join game</button>
         </form>
     </div>

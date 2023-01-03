@@ -14,8 +14,9 @@ public class AuthController {
 
     @PutMapping("/join/{gameId}/{side}")
     String join(@PathVariable String gameId, @PathVariable Alliance side) {
-        var result = authService.allocateForGame(gameId, side);
-        return result.orElseThrow();
+        var result = authService.allocateForGame(gameId, side).orElseThrow();
+        
+        return result;
     }
 
     @GetMapping("/free/{gameId}")

@@ -14,6 +14,17 @@ public class AuthServiceImpl extends HashMap<String, AuthServiceImpl.AuthRecord>
     BoardService boardService;
 
     @Override
+    public boolean isAuthorized(String gameId, String authId, Alliance alliance) {
+        boardService.lookupBoard(gameId).orElseThrow();
+        var record = getRecord(gameId);
+        if (alliance == Alliance.WHITE) {
+            return record.whiteId.equals(authId);
+        } else {
+            return record.blackId.equals(authId);
+        }
+    }
+
+    @Override
     public synchronized Optional<String> allocateForGame(String gameId, Alliance alliance) {
         boardService.lookupBoard(gameId).orElseThrow(); // Check if we have a game with that id
         var record = getRecord(gameId);
