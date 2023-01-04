@@ -1,0 +1,16 @@
+version: '3'
+services:
+  frontend:
+    container_name: checkers-frontend
+    image: zsr2531/checkers-frontend
+    restart: always
+    user: root
+    ports:
+      - "80:3000"
+  backend:
+    container_name: checkers-backend
+    image: zsr2531/checkers-backend
+    restart: always
+    user: root
+    ports:
+      - "8080:8080"
