@@ -18,9 +18,9 @@ public class AuthServiceImpl extends HashMap<String, AuthServiceImpl.AuthRecord>
         boardService.lookupBoard(gameId).orElseThrow();
         var record = getRecord(gameId);
         if (alliance == Alliance.WHITE) {
-            return record.whiteId.equals(authId);
+            return record.whiteId != null && record.whiteId.equals(authId);
         } else {
-            return record.blackId.equals(authId);
+            return record.whiteId != null && record.blackId.equals(authId);
         }
     }
 

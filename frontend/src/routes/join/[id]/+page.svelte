@@ -8,22 +8,40 @@
     export let data: PageData;
 
     async function join(side: Alliance) {
-        const result = await Api.join(data.id, side);
-        window.localStorage.setItem('authId', result);
-        document.cookie = 'authId=' + result + '; path=/';
-        goto(`${base}/game/${data.id}`);
+        try {
+            const result = await Api.join(data.id, side);
+            window.localStorage.setItem('authId', result);
+            window.localStorage.setItem('us', side);
+            document.cookie = 'authId=' + result + '; path=/';
+            document.cookie = `us=${side};path=/`;
+            goto(`${base}/game/${data.id}`);
+        } catch {
+            document.getElementById('refresh')?.click();
+        }
     }
 </script>
 
-<div class="flex flex-wrap text-center">
+<a class="hidden" id="refresh" href="#_" target="_self">REfresh placeholder</a>
+<div class="flex flex-wrap flex-col gap-2 text-center">
+    You can join the game as either white or black; the following are available:
     {#if data.white}
         <div class="flex-1">
-            <button on:click={() => join('WHITE')}>White</button>
+            <button class="joinbtn" on:click={() => join('WHITE')}>Join as White</button>
         </div>
     {/if}
     {#if data.black}
         <div class="flex-1">
-            <button on:click={() => join('BLACK')}>Black</button>
+            <button class="joinbtn" on:click={() => join('BLACK')}>Join as Black</button>
         </div>
     {/if}
 </div>
+
+<style lang="postcss">
+    .joinbtn {
+        @apply bg-sky-500 text-white p-2 rounded-md;
+    }
+
+    .joinbtn:hover {
+        @apply bg-sky-400;
+    }
+</style>

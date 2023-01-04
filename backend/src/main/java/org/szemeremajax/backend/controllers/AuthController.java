@@ -19,6 +19,12 @@ public class AuthController {
         return result;
     }
 
+    @PostMapping("/isAuthorized/{gameId}/{side}")
+    boolean isAuthorized(@PathVariable String gameId, @PathVariable Alliance side, @RequestBody String body) {
+        var result = authService.isAuthorized(gameId, body, side);
+        return result;
+    }
+
     @GetMapping("/free/{gameId}")
     @ResponseBody
     FreeResult free(@PathVariable String gameId) {
