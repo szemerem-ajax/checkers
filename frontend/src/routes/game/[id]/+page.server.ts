@@ -2,6 +2,7 @@ import type { PageServerLoad } from "./$types";
 import { error, redirect } from "@sveltejs/kit";
 import url from "$lib/Url";
 import Api from "$lib/Api";
+import { base } from "$app/paths";
 
 export const load: PageServerLoad = async ({ cookies, params }) => {
     const id = params.id;
@@ -13,7 +14,7 @@ export const load: PageServerLoad = async ({ cookies, params }) => {
     const auth = cookies.get('authId');
     const playable = await Api.playable(id);
     if (!playable && auth === undefined)
-        throw redirect(302, '/join/' + id);
+        throw redirect(302, base + '/join/' + id);
 
     return { id: id };
 };

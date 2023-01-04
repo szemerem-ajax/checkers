@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import Api from '$lib/Api';
 	import type { Alliance } from '$lib/Piece';
     import type { PageData } from './$types';
@@ -10,7 +11,7 @@
         const result = await Api.join(data.id, side);
         window.localStorage.setItem('authId', result);
         document.cookie = 'authId=' + result + '; path=/';
-        goto(`/game/${data.id}`);
+        goto(`${base}/game/${data.id}`);
     }
 </script>
 

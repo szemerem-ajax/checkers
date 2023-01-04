@@ -10,7 +10,7 @@
 		<slot />
 	</main>
 
-	<footer class="w-screen absolute bottom-0 pb-4 bg-slate-800">
+	<footer class="w-screen absolute bottom-0 pb-4 bg-slate-200 dark:bg-slate-800">
 		<div class="pt-3 grid place-items-center grid-cols-2">
 			<ul>
 				<li><p>Copyright Szemérem Ajax 2022</p></li>

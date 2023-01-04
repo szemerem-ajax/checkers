@@ -5,7 +5,7 @@
     ];
 </script>
 
-<div class="h-10 flex items-center justify-between p-2 bg-slate-800">
+<div class="h-10 flex items-center justify-between p-2 bg-slate-200 dark:bg-slate-800">
     <h1 class="text-2xl font-bold link"><a href="/">Checkers</a></h1>
     <ul class="flex gap-2">
         {#each pages as p, _}
