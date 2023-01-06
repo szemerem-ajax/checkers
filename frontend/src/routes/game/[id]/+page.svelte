@@ -21,7 +21,7 @@
 
     const us = window.localStorage.getItem('us');
 
-    const socket = Stomp.client(`ws://${url()}:8080/checkers-ws`);
+    const socket = Stomp.client(`ws://localhost:8080/checkers-ws`);
     socket.connect({}, f => {
         socket.subscribe(`/game/${data.id}/board`, msg => {
             const body = JSON.parse(msg.body);

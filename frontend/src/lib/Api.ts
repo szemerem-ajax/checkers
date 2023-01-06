@@ -40,7 +40,7 @@ export default class Api {
     }
 
     public static async join(game: string, side: Alliance): Promise<string> {
-        const result = await fetch(apiUrl + 'auth/join/' + game + '/' + side, { method: 'PUT' });
+        const result = await fetch('http://localhost:8080/' + 'auth/join/' + game + '/' + side, { method: 'PUT' });
         return await result.text();
     }
 }
