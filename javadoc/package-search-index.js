@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"org.szemeremajax.backend"},{"l":"org.szemeremajax.backend.controllers"},{"l":"org.szemeremajax.backend.dtos"},{"l":"org.szemeremajax.backend.models"},{"l":"org.szemeremajax.backend.services"},{"l":"org.szemeremajax.backend.wscontrollers"}];updateSearchResults();

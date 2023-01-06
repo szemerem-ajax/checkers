@@ -1,0 +1,6 @@
+org.szemeremajax.backend
+org.szemeremajax.backend.controllers
+org.szemeremajax.backend.dtos
+org.szemeremajax.backend.models
+org.szemeremajax.backend.services
+org.szemeremajax.backend.wscontrollers
