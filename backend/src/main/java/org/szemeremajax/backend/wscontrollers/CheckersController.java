@@ -41,11 +41,19 @@ public class CheckersController {
         sendBoardUpdate(message.getUuid());
     }
 
+    /**
+     * Signals to the server that a moves update packet should be sent.
+     * @param message The payload containing the game's id.
+     */
     @MessageMapping("/getmoves")
     public void getMoves(@Payload UuidDto message) {
         sendMovesUpdate(message.getUuid());
     }
 
+    /**
+     * Signals to the server that the player wants to make a move.
+     * @param message The payload containing the move information.
+     */
     @MessageMapping("/move")
     public void move(@Payload MoveDto message) {
         var board = boardService.lookupBoard(message.getBoardUuid()).orElseThrow();

@@ -9,8 +9,4 @@ public enum MoveKind {
     public boolean isCapture() {
         return this == CAPTURE || this == PROMOTION_WITH_CAPTURE;
     }
-
-    public boolean endsTurn() {
-        return !isCapture();
-    }
 }
