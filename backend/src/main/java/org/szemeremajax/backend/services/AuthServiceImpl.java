@@ -8,10 +8,13 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Provides an implementation of {@link AuthService}.
+ */
 @Component
 public class AuthServiceImpl extends HashMap<String, AuthServiceImpl.AuthRecord> implements AuthService {
     @Autowired
-    BoardService boardService;
+    private BoardService boardService;
 
     @Override
     public boolean isAuthorized(String gameId, String authId, Alliance alliance) {
@@ -56,21 +59,6 @@ public class AuthServiceImpl extends HashMap<String, AuthServiceImpl.AuthRecord>
         return record.isPlayable();
     }
 
-    @Override
-    public void dropAuth(String gameId) {
-        remove(gameId);
-    }
-
-    @Override
-    public void dropAuth(String gameId, Alliance alliance) {
-        var record = get(gameId);
-        if (alliance == Alliance.WHITE) {
-            record.setWhiteId(null);
-        } else {
-            record.setBlackId(null);
-        }
-    }
-
     private AuthRecord getRecord(String id) {
         if (containsKey(id))
             return get(id);
@@ -80,26 +68,26 @@ public class AuthServiceImpl extends HashMap<String, AuthServiceImpl.AuthRecord>
         return record;
     }
 
-    public static class AuthRecord {
+    static class AuthRecord {
         private String whiteId, blackId;
 
-        public String getWhiteId() {
+        String getWhiteId() {
             return whiteId;
         }
 
-        public void setWhiteId(String whiteId) {
+        void setWhiteId(String whiteId) {
             this.whiteId = whiteId;
         }
 
-        public String getBlackId() {
+        String getBlackId() {
             return blackId;
         }
 
-        public void setBlackId(String blackId) {
+        void setBlackId(String blackId) {
             this.blackId = blackId;
         }
 
-        public boolean isPlayable() {
+        boolean isPlayable() {
             return whiteId != null && blackId != null;
         }
     }

@@ -6,6 +6,9 @@ import org.szemeremajax.backend.models.*;
 import java.util.*;
 import java.util.stream.IntStream;
 
+/**
+ * Provides an implementation of {@link MoveGenerationService}.
+ */
 @Component
 public class MoveGenerationServiceImpl implements MoveGenerationService {
     private static final int[][] whiteManAttackMap = new int[51][2];

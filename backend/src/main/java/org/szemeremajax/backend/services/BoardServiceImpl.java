@@ -6,6 +6,9 @@ import org.szemeremajax.backend.models.Board;
 import java.util.HashMap;
 import java.util.Optional;
 
+/**
+ * Provides an implementation of {@link BoardService}.
+ */
 @Component
 public class BoardServiceImpl extends HashMap<String, Board> implements BoardService {
     @Override

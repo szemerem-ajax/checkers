@@ -1,4 +1,4 @@
-package org.szemeremajax.backend.messages;
+package org.szemeremajax.backend.dtos;
 
 import org.szemeremajax.backend.models.Alliance;
 import org.szemeremajax.backend.models.Board;
@@ -7,11 +7,11 @@ import org.szemeremajax.backend.models.PieceKind;
 
 import java.util.Arrays;
 
-public class BoardUpdateMessage {
-    private Alliance sideToMove;
-    private RawPiece[] pieces;
+public class BoardUpdateDto {
+    private final Alliance sideToMove;
+    private final RawPiece[] pieces;
 
-    public BoardUpdateMessage(Board board) {
+    public BoardUpdateDto(Board board) {
         this.sideToMove = board.getSideToMove();
         this.pieces = new RawPiece[50];
         var list = Arrays.stream(board.getPiecesRaw()).map(p -> p == null ? null : new RawPiece(p)).toList();
@@ -27,8 +27,8 @@ public class BoardUpdateMessage {
     }
 
     public static class RawPiece {
-        private Alliance alliance;
-        private PieceKind kind;
+        private final Alliance alliance;
+        private final PieceKind kind;
 
         public RawPiece(Piece piece) {
             this.alliance = piece.alliance();

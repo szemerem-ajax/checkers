@@ -1,9 +1,9 @@
-package org.szemeremajax.backend.messages;
+package org.szemeremajax.backend.dtos;
 
 import org.szemeremajax.backend.models.BoardTransition;
 import org.szemeremajax.backend.models.Move;
 
-public class MoveMessage {
+public class MoveDto {
     private String boardUuid, authUuid;
     private int from, to;
 

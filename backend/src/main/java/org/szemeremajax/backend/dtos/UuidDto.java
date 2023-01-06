@@ -1,6 +1,6 @@
-package org.szemeremajax.backend.messages;
+package org.szemeremajax.backend.dtos;
 
-public class BoardMessage {
+public class UuidDto {
     private String uuid;
 
     public String getUuid() {
