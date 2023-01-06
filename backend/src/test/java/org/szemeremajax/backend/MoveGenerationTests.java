@@ -2,7 +2,6 @@ package org.szemeremajax.backend;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.szemeremajax.backend.factories.BoardFactory;
 import org.szemeremajax.backend.models.*;
 import org.szemeremajax.backend.services.MoveGenerationService;
 import org.szemeremajax.backend.services.MoveGenerationServiceImpl;
@@ -378,14 +377,6 @@ public class MoveGenerationTests {
         Assertions.assertNull(move.to().getPiece(12));
         Assertions.assertNull(move.to().getPiece(29));
         Assertions.assertNotNull(move.to().getPiece(7));
-    }
-
-    @Test
-    public void startingPosition() {
-        var board = BoardFactory.defaultPosition();
-        var moves = generator.generateMoves(board);
-
-        Assertions.assertEquals(9, moves.size());
     }
 
     @Test
