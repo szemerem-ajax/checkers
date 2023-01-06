@@ -1,0 +1,146 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+enum Alliance << enumeration >> {
+  + Alliance(): 
+  + index(): int
+  + values(): Alliance[]
+  + opposite(): Alliance
+  + valueOf(String): Alliance
+}
+class AuthController {
+  + AuthController(): 
+  ~ free(String): FreeResult
+  ~ canStart(String): boolean
+  ~ join(String, Alliance): String
+  ~ isAuthorized(String, Alliance, String): boolean
+}
+interface AuthService << interface >> {
+  + isFree(String, Alliance): boolean
+  + allocateForGame(String, Alliance): Optional<String>
+  + canBePlayed(String): boolean
+  + isAuthorized(String, String, Alliance): boolean
+}
+class AuthServiceImpl {
+  + AuthServiceImpl(): 
+  + allocateForGame(String, Alliance): Optional<String>
+  + canBePlayed(String): boolean
+  + isFree(String, Alliance): boolean
+  + isAuthorized(String, String, Alliance): boolean
+}
+class BackendApplication {
+  + BackendApplication(): 
+  + main(String[]): void
+}
+class Board {
+  + Board(): 
+  + Board(Piece[], Alliance): 
+  + isSquareEmpty(int): boolean
+  + isSquareOccupied(int): boolean
+  + makePromotionMove(int, int, int): BoardTransition
+  + makePromotionMove(int, int): BoardTransition
+  + clone(): Board
+  + setPiece(int, Piece): Piece
+  + setOppositeSideToMove(): void
+  + makeNormalMove(int, int): BoardTransition
+  + getPiece(int): Piece
+  + makeCaptureMove(int, int, int): BoardTransition
+   lastJump: int
+   sideToMove: Alliance
+   piecesRaw: Piece[]
+}
+class BoardMovesDto {
+  + BoardMovesDto(List<BoardTransition>): 
+   moves: List<RawMoveDto>
+}
+interface BoardService << interface >> {
+  + lookupBoard(String): Optional<Board>
+  + setBoard(String, Board): void
+}
+class BoardServiceImpl {
+  + BoardServiceImpl(): 
+  + setBoard(String, Board): void
+  + lookupBoard(String): Optional<Board>
+}
+entity BoardTransition << record >> {
+  + BoardTransition(Move, Board, Board): 
+  + move(): Move
+  + to(): Board
+  + from(): Board
+}
+class BoardUpdateDto {
+  + BoardUpdateDto(Board): 
+   pieces: RawPieceDto[]
+   sideToMove: Alliance
+}
+class CheckersController {
+  + CheckersController(): 
+  + getMoves(UuidDto): void
+  + move(MoveDto): void
+  + getBoard(UuidDto): void
+}
+class GameController {
+  + GameController(): 
+  ~ create(): String
+  ~ find(String): boolean
+}
+entity Move << record >> {
+  + Move(int, int, MoveKind): 
+  + createNormal(int, int): Move
+  + createCapture(int, int): Move
+  + createPromotion(int, int): Move
+  + kind(): MoveKind
+  + from(): int
+  + to(): int
+  + createPromotionWithCapture(int, int): Move
+}
+class MoveDto {
+  + MoveDto(): 
+  + matches(BoardTransition): boolean
+  + matches(Move): boolean
+   from: int
+   to: int
+   boardUuid: String
+   authUuid: String
+}
+interface MoveGenerationService << interface >> {
+  + generateMoves(Board): List<BoardTransition>
+}
+class MoveGenerationServiceImpl {
+  + MoveGenerationServiceImpl(): 
+  + generateMoves(Board): List<BoardTransition>
+}
+enum MoveKind << enumeration >> {
+  + MoveKind(): 
+  + CAPTURE: 
+  + valueOf(String): MoveKind
+  + values(): MoveKind[]
+   CAPTURE: boolean
+}
+entity Piece << record >> {
+  + Piece(Alliance, PieceKind): 
+  + alliance(): Alliance
+  + kind(): PieceKind
+}
+enum PieceKind << enumeration >> {
+  + PieceKind(): 
+  + values(): PieceKind[]
+  + valueOf(String): PieceKind
+}
+class UuidDto {
+  + UuidDto(): 
+   uuid: String
+}
+class WebSocketConfig {
+  + WebSocketConfig(): 
+  + configureMessageBroker(MessageBrokerRegistry): void
+  + registerStompEndpoints(StompEndpointRegistry): void
+}
+
+AuthServiceImpl            -[#008200,dashed]-^  AuthService               
+BoardServiceImpl           -[#008200,dashed]-^  BoardService              
+MoveGenerationServiceImpl  -[#008200,dashed]-^  MoveGenerationService     
+@enduml
